@@ -3,7 +3,9 @@ module aoc-2024
 go 1.23.3
 
 require (
+	github.com/alitto/pond/v2 v2.1.5
 	github.com/mowshon/iterium v1.0.0
+	github.com/sa-/slicefunk v0.1.4
 	github.com/samber/lo v1.47.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f
