@@ -9,6 +9,7 @@ require (
 	github.com/samber/lo v1.47.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f
+	lukechampine.com/uint128 v1.3.0
 )
 
 require (
