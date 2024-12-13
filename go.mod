@@ -3,6 +3,7 @@ module aoc-2024
 go 1.23.3
 
 require (
+	github.com/alex-ant/gomath v0.0.0-20160516115720-89013a210a82
 	github.com/alitto/pond/v2 v2.1.5
 	github.com/dominikbraun/graph v0.23.0
 	github.com/mowshon/iterium v1.0.0
