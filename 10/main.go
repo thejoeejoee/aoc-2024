@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "aoc-2024/internal"
+	"aoc-2024/internal/taoc"
 	"fmt"
 	"github.com/alitto/pond/v2"
 	"github.com/sa-/slicefunk"
@@ -45,45 +46,10 @@ func init() {
 	//Input = internal.Download(2024, 10)
 }
 
-var Top = vector{coord{A: 0, B: -1}}
-var Right = vector{coord{A: 1, B: 0}}
-var Bottom = vector{coord{A: 0, B: 1}}
-var Left = vector{coord{A: -1, B: 0}}
-
-var directions = []vector{Top, Right, Bottom, Left}
-
-type coord lo.Tuple2[int, int]
-
-type position struct {
-	coord
-}
-
-type vector struct {
-	coord
-}
-
-func (c position) Add(o vector) position {
-	return position{coord: coord{
-		A: c.A + o.A,
-		B: c.B + o.B,
-	}}
-}
-
-func (c position) Diff(o position) vector {
-	return vector{coord: coord{
-		A: c.A - o.A,
-		B: c.B - o.B,
-	}}
-}
-
-func (c position) In(end position) bool {
-	return c.A >= 0 && c.A <= end.A && c.B >= 0 && c.B <= end.B
-}
-
-type Hill = lo.Entry[position, uint8]
+type Hill = lo.Entry[taoc.Position, uint8]
 
 type route struct {
-	seen []position
+	seen []taoc.Position
 }
 
 func (r route) completed() bool {
@@ -91,8 +57,8 @@ func (r route) completed() bool {
 }
 
 type state struct {
-	end   position
-	hills map[position]uint8
+	end   taoc.Position
+	hills map[taoc.Position]uint8
 	p     pond.ResultPool[[]route]
 
 	todo    []route
@@ -103,11 +69,11 @@ func main() {
 	lines := slicefunk.Map(strings.Split(strings.TrimSpace(Input), "\n"), strings.TrimSpace)
 	hills := lo.FromEntries(lo.FlatMap(lines, func(line string, y int) []Hill {
 		return lo.Map([]rune(line), func(h rune, x int) Hill {
-			return Hill{Key: position{coord{A: x, B: y}}, Value: uint8(h - '0')}
+			return Hill{Key: taoc.Position{Coord: taoc.Coord{A: x, B: y}}, Value: uint8(h - '0')}
 		})
 	}))
 
-	end := position{coord{A: len(lines[0]), B: len(lines)}}
+	end := taoc.Position{taoc.Coord{A: len(lines[0]), B: len(lines)}}
 
 	//fmt.Println(hills)
 
@@ -115,7 +81,7 @@ func main() {
 		if h.Value != 0 {
 			return route{}, false
 		}
-		return route{seen: []position{h.Key}}, true
+		return route{seen: []taoc.Position{h.Key}}, true
 	})
 
 	//fmt.Println(initials)
@@ -131,7 +97,7 @@ func main() {
 		r := s.todo[0]
 		sliced := s.todo[1:]
 		news := discover(s, r)
-		slog.Info("discovered", "news", lo.Map(news, func(item route, index int) position {
+		slog.Info("discovered", "news", lo.Map(news, func(item route, index int) taoc.Position {
 			return lo.Must(lo.Last(item.seen))
 		}))
 		s.todo = append(sliced, news...)
@@ -143,7 +109,7 @@ func main() {
 		all := lo.Filter(results, func(r route, _ int) bool {
 			return r.seen[0] == i.seen[0]
 		})
-		uniqEnds := lo.UniqBy(all, func(r route) position {
+		uniqEnds := lo.UniqBy(all, func(r route) taoc.Position {
 			return lo.Must(lo.Last(r.seen))
 		})
 		for _, r := range all {
@@ -168,7 +134,7 @@ func discover(s *state, r route) []route {
 		return nil
 	}
 
-	return lo.FilterMap(directions, func(dir vector, _ int) (route, bool) {
+	return lo.FilterMap(taoc.Directions4, func(dir taoc.Vector, _ int) (route, bool) {
 		//	try direction and return new route if we want to continue
 		current := lo.Must(lo.Last(r.seen))
 		next := current.Add(dir)
@@ -186,7 +152,7 @@ func discover(s *state, r route) []route {
 			return route{}, false
 		}
 
-		expanded := route{seen: append([]position{}, r.seen...)}
+		expanded := route{seen: append([]taoc.Position{}, r.seen...)}
 		expanded.seen = append(expanded.seen, next)
 
 		log.Info("oh yes!", "expanded", expanded)
