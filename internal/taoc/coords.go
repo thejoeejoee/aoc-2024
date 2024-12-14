@@ -47,3 +47,24 @@ func (c Position) Diff(o Position) Vector {
 func (c Position) In(end Position) bool {
 	return c.A >= 0 && c.A <= end.A && c.B >= 0 && c.B <= end.B
 }
+
+func (c Position) WrapAround(end Position) Position {
+	w := end.A + 1
+	h := end.B + 1
+
+	for c.A < 0 {
+		c.A += w
+	}
+	for c.B < 0 {
+		c.B += h
+	}
+
+	return NewPos(
+		c.A%w,
+		c.B%h,
+	)
+}
+
+func NewPos(x, y int) Position {
+	return Position{Coord: Coord{A: x, B: y}}
+}
