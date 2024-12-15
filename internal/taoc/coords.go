@@ -30,6 +30,17 @@ type Vector struct {
 	Coord
 }
 
+func (v Vector) String() string {
+	return string("^>v<"[lo.IndexOf(Directions4, v)])
+}
+
+func (v Vector) Reverse() Vector {
+	return Vector{Coord: Coord{
+		A: -v.A,
+		B: -v.B,
+	}}
+}
+
 func (c Position) Add(o Vector) Position {
 	return Position{Coord: Coord{
 		A: c.A + o.A,
@@ -67,4 +78,8 @@ func (c Position) WrapAround(end Position) Position {
 
 func NewPos(x, y int) Position {
 	return Position{Coord: Coord{A: x, B: y}}
+}
+
+func Vec4FromRune(r rune) Vector {
+	return Directions4[lo.IndexOf([]rune("^>v<"), r)]
 }
